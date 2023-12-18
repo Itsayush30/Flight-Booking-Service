@@ -9,6 +9,7 @@ const AppError = require('../utils/errors/app-error');
 const bookingRepository = new BookingRepository();
 
 async function createBooking(data) {
+    // First, we start a transaction from our connection and save it into a variable
     const transaction = await db.sequelize.transaction();
     try {
         const flight = await axios.get(`${ServerConfig.FLIGHT_SERVICE}/api/v1/flights/${data.flightId}`);
@@ -18,7 +19,7 @@ async function createBooking(data) {
         }
         const totalBillingAmount = data.noofSeats * flightData.price;
         const bookingPayload = {...data, totalCost: totalBillingAmount};
-        const booking = await bookingRepository.create(bookingPayload, transaction);
+        const booking = await bookingRepository.createBooking(bookingPayload, transaction);
 
         await axios.patch(`${ServerConfig.FLIGHT_SERVICE}/api/v1/flights/${data.flightId}/seats`, {
             seats: data.noofSeats
