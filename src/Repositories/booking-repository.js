@@ -16,6 +16,7 @@ class BookingRepository extends CrudRepository {
 
   async getBooking(data, transaction) {
     const response = await Booking.findByPk(data, { transaction: transaction });
+    console.log(transaction);
     if (!response) {
       throw new AppError(
         "Not able to find booking for given bookingId",
