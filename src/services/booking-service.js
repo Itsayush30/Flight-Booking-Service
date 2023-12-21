@@ -54,7 +54,7 @@ async function makePayment(data) {
     const currentTime = new Date();
     if (currentTime - bookingTime > 300000) {
       await cancelBooking(data.bookingId);
-      throw new AppError("The booking has expired", StatusCodes.BAD_REQUEST);
+      throw new AppError("The booking has expired and cancelled", StatusCodes.BAD_REQUEST);
     }
     if (bookingDetails.totalCost != data.totalCost) {
       throw new AppError(
@@ -100,7 +100,7 @@ async function cancelBooking(bookingId) {
         dec: 0,
       }
     );
-    await bookingRepository.update(
+    await bookingRepository.updateBooking(
       bookingId,
       { status: CANCELLED },
       transaction
