@@ -49,12 +49,15 @@ async function makePayment(data) {
     if (bookingDetails.status == CANCELLED) {
       throw new AppError("The booking has expired", StatusCodes.BAD_REQUEST);
     }
-    console.log(bookingDetails);
+    //console.log(bookingDetails);
     const bookingTime = new Date(bookingDetails.createdAt);
     const currentTime = new Date();
     if (currentTime - bookingTime > 300000) {
       await cancelBooking(data.bookingId);
-      throw new AppError("The booking has expired and cancelled", StatusCodes.BAD_REQUEST);
+      throw new AppError(
+        "The booking has expired and cancelled",
+        StatusCodes.BAD_REQUEST
+      );
     }
     if (bookingDetails.totalCost != data.totalCost) {
       throw new AppError(
@@ -112,7 +115,20 @@ async function cancelBooking(bookingId) {
   }
 }
 
+async function cancelOldBookings() {
+  try {
+    //console.log("Inside service")
+    const time = new Date(Date.now() - 1000 * 300); // time 5 mins ago
+    const response = await bookingRepository.cancelOldBookings(time);
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 module.exports = {
   createBooking,
   makePayment,
+  cancelOldBookings,
 };
