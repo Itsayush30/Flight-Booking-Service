@@ -1,8 +1,8 @@
 const express = require("express");
 
-const { ServerConfig } = require("./config");
+const { ServerConfig, Queue } = require("./config");
 const apiRoutes = require("./routes");
-const CRON = require('./utils/common/cron-jobs');
+const CRON = require("./utils/common/cron-jobs");
 
 const app = express();
 
@@ -12,10 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api", apiRoutes);
 app.use("/bookingService/api", apiRoutes);
 
-
-app.listen(ServerConfig.PORT, () => {
+app.listen(ServerConfig.PORT, async () => {
   console.log(`Successfully started the server on PORT : ${ServerConfig.PORT}`);
   CRON();
+  await Queue.connectQueue();
 });
-
-/**Directly called cron jobs, beacuse of circular dependencies */
